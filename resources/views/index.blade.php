@@ -25,7 +25,7 @@
     {{-- Second approach or Alternative rendering --}}
     @forelse ($tasks as $task)
     <li>
-        <a href="{{route('tasks.singletask', ['id' => $task->id])}}">
+        <a href="{{route('tasks.singletask', ['task' => $task->id])}}">
             {{ $task->title }}
         </a>
     </li>

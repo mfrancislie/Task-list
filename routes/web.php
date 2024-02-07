@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\TaskRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Task;
@@ -26,6 +27,7 @@ Route::get('/', function() {
 // App\Models\Task::all()->latest()where('completed, true')->get(). you will get all tasks completed 
 // cmd: php artisan tinker is lets you write queries.
 // cmd: php artisan route:list. show all the routes list
+// cmd: php artisan make:request. to create http request file
 
 // fetching all the data from the database
 Route::get('/tasks', function () {
@@ -39,54 +41,31 @@ Route::get('/tasks', function () {
 Route::view('/tasks/create', 'create')->name('tasks.create');
 
 
-
 // to render a single task
-Route::get('/tasks/{id}', function ($id) { 
-    return view('singletask', ['task' => Task::findOrFail($id)]);
+Route::get('/tasks/{task}', function (Task $task) { 
+    return view('singletask', ['task' => $task]);
 })->name('tasks.singletask');
 
 
 
-// get the data to update the data
-Route::get('/tasks/{id}/edit', function ($id) { 
-    return view('edit', ['task' => Task::findOrFail($id)]);
+// get the id to update the data
+Route::get('/tasks/{task}/edit', function (Task $task) { 
+    return view('edit', ['task' => $task]);
 })->name('tasks.edit');
 
 
 // To create new task
-Route::post('/tasks', function (Request $request) {
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required'
-    ]);
-
-    $task = new Task;
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-    $task->save();
-
-    return redirect()->route('tasks.singletask', ['id' => $task->id])
+Route::post('/tasks', function (TaskRequest $request) {
+    $task = Task::create($request->validated());
+    return redirect()->route('tasks.singletask', ['task' => $task->id])
     ->with('success', 'Task created successfully!');;
 })->name('tasks.store');
 
 
 
 // To Update the data
-Route::put('/tasks/{id}', function ($id, Request $request) {
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required'
-    ]);
-
-    $task = Task::findOrFail($id);
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-    $task->save();
-
-    return redirect()->route('tasks.singletask', ['id' => $task->id])
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
+    $task->update($request->validated());
+    return redirect()->route('tasks.singletask', ['task' => $task->id])
     ->with('success', 'Task updated successfully!');;
 })->name('tasks.updated');
