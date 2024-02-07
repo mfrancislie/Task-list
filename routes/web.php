@@ -69,3 +69,11 @@ Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
     return redirect()->route('tasks.singletask', ['task' => $task->id])
     ->with('success', 'Task updated successfully!');;
 })->name('tasks.updated');
+
+// delete the data
+Route::delete('/tasks/{task}', function(Task $task){
+  $task->delete();
+
+  return redirect()->route('tasks.index', ['task' => $task->id])
+  ->with('success', 'Task deleted successfully!');
+})->name('tasks.destroy');
