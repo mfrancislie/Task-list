@@ -55,5 +55,6 @@ Route::post('/tasks', function (Request $request) {
     $task->long_description = $data['long_description'];
     $task->save();
 
-    return redirect()->route('tasks.singletask', ['id' => $task->id]);
+    return redirect()->route('tasks.singletask', ['id' => $task->id])
+    ->with('success', 'Task created successfully!');;
 })->name('tasks.store');
