@@ -29,10 +29,16 @@ Route::get('/', function() {
 // cmd: php artisan route:list. show all the routes list
 // cmd: php artisan make:request. to create http request file
 
+// paginate() method internally also call get and it will automatically read any query parameters that are appended to the url,
+// and its also generate links to different pages that you can then use in your blade template.
+
+
+
+
 // fetching all the data from the database
 Route::get('/tasks', function () {
     return view('index', [
-        'tasks' => Task::latest()->get()
+        'tasks' => Task::latest()->paginate(5)
         ]);
 })->name('tasks.index');
 
@@ -77,3 +83,12 @@ Route::delete('/tasks/{task}', function(Task $task){
   return redirect()->route('tasks.index', ['task' => $task->id])
   ->with('success', 'Task deleted successfully!');
 })->name('tasks.destroy');
+
+
+Route::put('/tasks/{task}/toggle-complete', function(Task $task) {
+    // $task->completed = !$task->completed
+    // $task->save();
+
+    $task->toggleComplete();
+    return redirect()->back()->with('success', 'Task updated successfully!');
+})->name('tasks.toggle-complete');
